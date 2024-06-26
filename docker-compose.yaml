@@ -1,0 +1,48 @@
+services:
+  flask:
+    restart: always
+    build: ./web
+    links:
+      - postgres_db:postgres_db
+    ports:
+      - 8000:8000
+    env_file:
+      - web/.env
+    depends_on:
+      - postgres_db
+
+  nginx:
+    image: nginx:latest
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/conf.d/app.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - flask
+
+  postgres_db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: test_db
+      POSTGRES_HOST_AUTH_METHOD: trust
+      POSTGRES_INITDB_ARGS: --auth-host=trust
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4
+    ports:
+      - 5050:80
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "pgadmin@admin.com"
+      PGADMIN_DEFAULT_PASSWORD: "pgadmin"
+
+volumes:
+  postgres-data:
+    driver: local
