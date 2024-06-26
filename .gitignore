@@ -2,3 +2,6 @@ venv
 .mypy_cache
 **/desktop.ini
 test.ipynb
+docker-compose_web.yaml
+docker-compose_db.yaml
+sample_dockercompose.txt
